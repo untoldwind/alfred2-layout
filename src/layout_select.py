@@ -31,8 +31,9 @@ for x1 in range(1, 4):
 					layouts.append(Layout("%d%d-%d%d" % (x1, y1, x2, y2), "(%d %d) - (%d %d)" % (x1, y1, x2, y2), "%f,%f,%f,%f" % ((x1 -1) / 3.0, (y1 - 1) / 3.0, x2 / 3.0, y2 / 3.0)))
 
 query = sys.argv[1]
-if len(query) > 1:
+if len(query) > 0:
 	layouts = [n for n in layouts if query.lower() in n.name.lower()]
+layouts = sorted(layouts, key=lambda l: len(l.name))
 
 root = ET.Element('items')
 for layout in layouts:

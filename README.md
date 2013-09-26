@@ -5,7 +5,7 @@ A simple window layouter based on an Alfred 2 workflow.
 
 # Description
 
-* The workflow itself is quite simple just typ in the keyword "lay" (or chose another of your liking) followed by:
+The workflow itself is quite simple just typ in the keyword "lay" (or chose another of your liking) followed by:
 * full = Maximize
 * left, right, top, bottom = Halves of screen
 * topleft, topright, bottomleft, bottomright = Quaters of screen

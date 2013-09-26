@@ -33,7 +33,6 @@ class Rect:
 	def __repr__(self):
 		return "Rect(%d, %d, %d, %d)" % (self.left, self.top, self.right, self.bottom)
 
-
 targetArg = sys.argv[1].split(",")
 target = Rect(float(targetArg[0]), float(targetArg[1]), float(targetArg[2]), float(targetArg[3]))
 
@@ -49,9 +48,11 @@ for screen in NSScreen.screens():
 
 appBundleId = next(app for app in NSWorkspace.sharedWorkspace().runningApplications() if app.isActive()).bundleIdentifier()
 
+blacklist = ["com.adiumX.adiumX"]
+
 app = SBApplication.applicationWithBundleIdentifier_(appBundleId)
 
-if "windows" in dir(app) and callable(getattr(app, "windows")):
+if not appBundleId in blacklist and "windows" in dir(app) and callable(getattr(app, "windows")):
 	window = app.windows()[0]
 	bounds = window.bounds()
 	appRect = Rect(bounds.origin.x, bounds.origin.y, bounds.origin.x + bounds.size.width, bounds.origin.y + bounds.size.height)

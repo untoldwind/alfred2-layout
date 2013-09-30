@@ -26,6 +26,10 @@ class Rect
 		other.left <= @right && other.right >= @left && other.top <= @bottom && other.bottom >= @top
 	end
 
+	def intersection(other)
+		Rect.new([@left, other.left].max, [@top, other.top].max, [@right, other.right].min, [@bottom, other.bottom].min)
+	end
+
 	def area
 		width()**2 + height()**2
 	end
@@ -58,7 +62,7 @@ systemevents.processes().select { |process| process.frontmost() }.each do |proce
 	appRect = Rect.new(properties['position'][0].to_i, properties['position'][1].to_i, 
 					   properties['position'][0].to_i + properties['size'][0].to_i, properties['position'][1].to_i + properties['size'][1].to_i)
 	appScreens = screens.select { |screen| screen.intersects(appRect) }
-	appScreens = appScreens.sort { |a, b| a.intersection(appRect).area <=> b.intersection(appRect).area }
+	appScreens = appScreens.sort { |a, b| b.intersection(appRect).area <=> a.intersection(appRect).area }
 	appScreen = appScreens.first
 
 	window.setProperties_({'position' => [0,0]})

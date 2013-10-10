@@ -10,6 +10,7 @@ class Layout:
 		self.arg = arg
 
 layouts = [
+    Layout("togglefullscreen", "Toggle full screen mode", "togglefullscreen"),
 	Layout("full", "Full", "0,0,1,1"),
 	Layout("left", "Left", "0,0,0.5,1"),
 	Layout("top", "Top", "0,0,1,0.5"),
@@ -18,7 +19,8 @@ layouts = [
 	Layout("topleft", "Top left", "0,0,0.5,0.5"),
 	Layout("bottomleft", "Bottom left", "0,0.5,0.5,1"),
 	Layout("topright", "Top right", "0.5,0,1,0.5"),
-	Layout("bottomright", "Bottom right", "0.5,0.5,1,1")
+	Layout("bottomright", "Bottom right", "0.5,0.5,1,1"),
+    Layout("center", "Center", "0.1,0.1,0.9,0.9")
 ]
 
 for x1 in range(1, 4):

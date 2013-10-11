@@ -51,21 +51,37 @@ OSX::NSScreen.screens().each do |screen|
 end
 
 systemevents = OSX::SBApplication.applicationWithBundleIdentifier_("com.apple.systemevents")
-systemevents.processes().select { |process| process.frontmost() }.each do |process|
-	windows = process.windows().select { |win| win.properties()["subrole"] == "AXStandardWindow" }
-	if windows.empty?
-		window = process.windows().first
-	else
-		window = windows.first
-	end
-	properties = window.properties()
-	appRect = Rect.new(properties['position'][0].to_i, properties['position'][1].to_i, 
-					   properties['position'][0].to_i + properties['size'][0].to_i, properties['position'][1].to_i + properties['size'][1].to_i)
-	appScreens = screens.select { |screen| screen.intersects(appRect) }
-	appScreens = appScreens.sort { |a, b| b.intersection(appRect).area <=> a.intersection(appRect).area }
-	appScreen = appScreens.first
 
-	window.setProperties_({'position' => [0,0]})
-	window.setProperties_({'size' => [appScreen.width() * target.width(), appScreen.height() * target.height()]})
-	window.setProperties_({'position' => [appScreen.left + appScreen.width() * target.left, appScreen.top + appScreen.height() * target.top]})
-end
+processes = systemevents.elementArrayWithCode_(0x70726373)
+frontmostPredicate = OSX::NSPredicate.predicateWithFormat("frontmost == true")
+frontmost = processes.filteredArrayUsingPredicate_(frontmostPredicate).first
+window = frontmost.attributes().objectWithName_("AXMainWindow").value().get()
+properties = window.properties()
+appRect = Rect.new(properties['position'][0].to_i, properties['position'][1].to_i, 
+				   properties['position'][0].to_i + properties['size'][0].to_i, properties['position'][1].to_i + properties['size'][1].to_i)
+appScreens = screens.select { |screen| screen.intersects(appRect) }
+appScreens = appScreens.sort { |a, b| b.intersection(appRect).area <=> a.intersection(appRect).area }
+appScreen = appScreens.first
+
+window.setProperties_({'position' => [0,0]})
+window.setProperties_({'size' => [appScreen.width() * target.width(), appScreen.height() * target.height()]})
+window.setProperties_({'position' => [appScreen.left + appScreen.width() * target.left, appScreen.top + appScreen.height() * target.top]})
+
+#systemevents.processes().select { |process| process.frontmost() }.each do |process|
+#	windows = process.windows().select { |win| win.properties()["subrole"] == "AXStandardWindow" }
+#	if windows.empty?
+#		window = process.windows().first
+#	else
+#		window = windows.first
+#	end
+#	properties = window.properties()
+#	appRect = Rect.new(properties['position'][0].to_i, properties['position'][1].to_i, 
+#					   properties['position'][0].to_i + properties['size'][0].to_i, properties['position'][1].to_i + properties['size'][1].to_i)
+#	appScreens = screens.select { |screen| screen.intersects(appRect) }
+#	appScreens = appScreens.sort { |a, b| b.intersection(appRect).area <=> a.intersection(appRect).area }
+#	appScreen = appScreens.first
+#
+#	window.setProperties_({'position' => [0,0]})
+#	window.setProperties_({'size' => [appScreen.width() * target.width(), appScreen.height() * target.height()]})
+#	window.setProperties_({'position' => [appScreen.left + appScreen.width() * target.left, appScreen.top + appScreen.height() * target.top]})
+#end

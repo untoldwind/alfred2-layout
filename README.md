@@ -9,8 +9,10 @@ The workflow itself is quite simple just typ in the keyword "lay" (or chose anot
 * full = Maximize
 * left, right, top, bottom = Halves of screen
 * topleft, topright, bottomleft, bottomright = Quaters of screen
+* center = Center of screen (with 10% border)
 * 11,12,13,21,22,23,31,32,33 = Thrids of screen
 * 11-12,11-13,11-21,11-22 ... = Some other sizes based on thrids
+* togglefullscreen = Toggle full screen mode of active window (if possible)
 * ... well the script is quite flexible, so I'm waiting for suggestions
 
 It is multi-screen-able. Even though you cannot move windows from one screen to another (yet?) the scripts tries to figure out with screen you mean (depending on the size of the visible area).

@@ -8,6 +8,7 @@ class Layout:
 		self.name = name
 		self.title = title
 		self.arg = arg
+		self.uid = "layout." + name
 
 layouts = [
     Layout("togglefullscreen", "Toggle full screen mode", "togglefullscreen"),
@@ -39,7 +40,7 @@ layouts = sorted(layouts, key=lambda l: len(l.name))
 
 root = ET.Element('items')
 for layout in layouts:
-	ie = ET.Element('item', valid="yes", arg=layout.arg)
+	ie = ET.Element('item', valid="yes", arg=layout.arg, uid=layout.uid)
 	te = ET.Element('title')
 	te.text = layout.title
 	ie.append(te)

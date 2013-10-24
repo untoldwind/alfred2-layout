@@ -2,6 +2,10 @@
 
 import sys
 from AppKit import *
+
+info = NSBundle.mainBundle().infoDictionary()
+info["LSBackgroundOnly"] = "1"
+
 from Foundation import *
 from ScriptingBridge import *
 
@@ -46,33 +50,19 @@ for screen in NSScreen.screens():
 		Rect(visibleFrame.origin.x, mainHeight - visibleFrame.size.height - visibleFrame.origin.y, 
 			visibleFrame.origin.x + visibleFrame.size.width, mainHeight - visibleFrame.origin.y))
 
-appBundleId = next(app for app in NSWorkspace.sharedWorkspace().runningApplications() if app.isActive()).bundleIdentifier()
+systemevents = SBApplication.applicationWithBundleIdentifier_("com.apple.systemevents")
 
-blacklist = ["com.adiumX.adiumX"]
+frontmostPredicate = NSPredicate.predicateWithFormat_("frontmost == true")
+frontmost = systemevents.processes().filteredArrayUsingPredicate_(frontmostPredicate)[0]
+window = frontmost.attributes().objectWithName_("AXMainWindow").value().get()
 
-app = SBApplication.applicationWithBundleIdentifier_(appBundleId)
+properties = window.properties()
+appRect = Rect(properties['position'][0], properties['position'][1], properties['position'][0] + properties['size'][0], properties['position'][1] + properties['size'][1])
+appScreens = [s for s in screens if s.intersects(appRect)]
+appScreens = sorted(appScreens, key=lambda s: s.intersection(appRect).area())
+appScreen = next(reversed(appScreens))
 
-if not appBundleId in blacklist and "windows" in dir(app) and callable(getattr(app, "windows")):
-	window = app.windows()[0]
-	bounds = window.bounds()
-	appRect = Rect(bounds.origin.x, bounds.origin.y, bounds.origin.x + bounds.size.width, bounds.origin.y + bounds.size.height)
-	appScreens = [s for s in screens if s.intersects(appRect)]
-	appScreens = sorted(appScreens, key=lambda s: s.intersection(appRect).area())
-	appScreen = next(reversed(appScreens))
-	window.setBounds_([[appScreen.left + appScreen.width() * target.left, appScreen.top + appScreen.height() * target.top], [appScreen.width() * target.width(), appScreen.height() * target.height()]])
-else:
-	systemevents = SBApplication.applicationWithBundleIdentifier_("com.apple.systemevents")
-
-	for process in systemevents.processes():
-		if process.frontmost():
-			window = next((win for win in process.windows() if win.properties()["subrole"] == "AXStandardWindow"), process.windows()[0])
-			properties = window.properties()
-			appRect = Rect(properties['position'][0], properties['position'][1], properties['position'][0] + properties['size'][0], properties['position'][1] + properties['size'][1])
-			appScreens = [s for s in screens if s.intersects(appRect)]
-			appScreens = sorted(appScreens, key=lambda s: s.intersection(appRect).area())
-			appScreen = next(reversed(appScreens))
-
-			window.setProperties_({'position':[0,0]})
-			window.setProperties_({'size':[appScreen.width() * target.width(), appScreen.height() * target.height()]})
-			window.setProperties_({'position':[appScreen.left + appScreen.width() * target.left, appScreen.top + appScreen.height() * target.top]})
-			break
+window.propertyWithCode_(0x706f736e).setTo_([0, 0])
+window.propertyWithCode_(0x7074737a).setTo_([appScreen.width() * target.width(), appScreen.height() * target.height()])
+window = frontmost.attributes().objectWithName_("AXMainWindow").value().get()
+window.propertyWithCode_(0x706f736e).setTo_([appScreen.left + appScreen.width() * target.left, appScreen.top + appScreen.height() * target.top])

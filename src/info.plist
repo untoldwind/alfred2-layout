@@ -48,7 +48,8 @@
 				<string>if [ "{query}" = "togglefullscreen" ]; then
 	/usr/bin/osascript togglefullscreen.scpt
 else
-    /System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/bin/ruby layout.rb "{query}"
+	/usr/bin/python layout.py "{query}"
+#    /System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/bin/ruby layout.rb "{query}"
 fi</string>
 				<key>type</key>
 				<integer>0</integer>

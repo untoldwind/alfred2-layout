@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/bin/ruby
 
 require "osx/cocoa"
 include OSX
@@ -62,25 +62,14 @@ appScreens = screens.select { |screen| screen.intersects(appRect) }
 appScreens = appScreens.sort { |a, b| b.intersection(appRect).area <=> a.intersection(appRect).area }
 appScreen = appScreens.first
 
-window.setProperties_({'position' => [0,0]})
-window.setProperties_({'size' => [appScreen.width() * target.width(), appScreen.height() * target.height()],
-	'position' => [appScreen.left + appScreen.width() * target.left, appScreen.top + appScreen.height() * target.top]})
+# these properties can be found in /System/Library/CoreServices/System Events.app/Contents/Resources/SystemEvents.sdef
+# there is a little issue if the window is too big (i.e. partly outside screen), therefore we first move to 0,0
+windowPosition = window.propertyWithCode_(0x706f736e) # this is "posn" in hexcode
+windowSize = window.propertyWithCode_(0x7074737a) # this is "ptsz" in hexcode
+windowPosition.setTo_([0, 0])
+windowSize.setTo_([appScreen.width() * target.width(), appScreen.height() * target.height()])
 
-#systemevents.processes().select { |process| process.frontmost() }.each do |process|
-#	windows = process.windows().select { |win| win.properties()["subrole"] == "AXStandardWindow" }
-#	if windows.empty?
-#		window = process.windows().first
-#	else
-#		window = windows.first
-#	end
-#	properties = window.properties()
-#	appRect = Rect.new(properties['position'][0].to_i, properties['position'][1].to_i, 
-#					   properties['position'][0].to_i + properties['size'][0].to_i, properties['position'][1].to_i + properties['size'][1].to_i)
-#	appScreens = screens.select { |screen| screen.intersects(appRect) }
-#	appScreens = appScreens.sort { |a, b| b.intersection(appRect).area <=> a.intersection(appRect).area }
-#	appScreen = appScreens.first
-#
-#	window.setProperties_({'position' => [0,0]})
-#	window.setProperties_({'size' => [appScreen.width() * target.width(), appScreen.height() * target.height()]})
-#	window.setProperties_({'position' => [appScreen.left + appScreen.width() * target.left, appScreen.top + appScreen.height() * target.top]})
-#end
+# After this we do it anew since there might be some events swallowed otherwide
+window = frontmost.attributes().objectWithName_("AXMainWindow").value().get()
+windowPosition = window.propertyWithCode_(0x706f736e) # this is "posn" in hexcode
+windowPosition.setTo_([appScreen.left + appScreen.width() * target.left, appScreen.top + appScreen.height() * target.top])

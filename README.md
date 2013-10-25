@@ -18,6 +18,9 @@ The workflow itself is quite simple just typ in the keyword "lay" (or chose anot
 * 11,12,13,21,22,23,31,32,33 = Thrids of screen
 * 11-12,11-13,11-21,11-22 ... = Some other sizes based on thrids
 * togglefullscreen = Toggle full screen mode of active window (if possible)
+* movecenter = Move window to center of screen (no resize)
+* movetopleft, movetopright, movebottomleft, movebottomright = Move window to edges of screen (no resize)
+* grow, shrink = resize window by 1/6 of screen size with sticky screen edges
 * ... well the script is quite flexible, so I'm waiting for suggestions
 
 It is multi-screen-able. Even though you cannot move windows from one screen to another (yet?) the scripts tries to figure out with screen you mean (depending on the size of the visible area).

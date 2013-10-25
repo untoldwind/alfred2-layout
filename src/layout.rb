@@ -62,7 +62,58 @@ appScreen = appScreens.first
 
 
 case targetArg.size
+when 1
+	# Single value => resize in all directions with sticks screen borders
+	resize_x = appScreen.width * targetArg[0].to_f
+	resize_y = appScreen.height * targetArg[0].to_f	
+	if (appRect.left - appScreen.left).abs < 0.01 * appScreen.width
+		if (appRect.right - appScreen.right).abs < 0.01 * appScreen.width
+			left = appScreen.left
+			right = appRect.right
+		else
+			left = appScreen.left
+			right = appRect.right + resize_x
+		end
+	elsif (appRect.right - appScreen.right).abs < 0.01 * appScreen.width
+		left = appRect.left - resize_x
+		right = appScreen.right
+	else
+		left = appRect.left - resize_x * 0.5
+		right = appRect.right + resize_x * 0.5
+	end
+	if (appRect.top - appScreen.top).abs < 0.01 * appScreen.height
+		if (appRect.bottom - appScreen.bottom).abs < 0.01 * appScreen.height
+			top = appScreen.top
+			bottom = appRect.bottom
+		else
+			top = appScreen.top
+			bottom = appRect.bottom + resize_y
+		end
+	elsif (appRect.bottom - appScreen.bottom).abs < 0.01 * appScreen.height
+		top = appRect.top - resize_y
+		bottom = appScreen.bottom
+	else
+		top = appRect.top - resize_y * 0.5
+		bottom = appRect.bottom + resize_y * 0.5
+	end
+	left = [left, appScreen.left].max
+	top = [top, appScreen.top].max
+	right = [right, appScreen.right].min
+	bottom = [bottom, appScreen.bottom].min
+
+	# these properties can be found in /System/Library/CoreServices/System Events.app/Contents/Resources/SystemEvents.sdef
+	# there is a little issue if the window is too big (i.e. partly outside screen), therefore we first move to 0,0
+	windowPosition = window.propertyWithCode_(0x706f736e) # this is "posn" in hexcode
+	windowSize = window.propertyWithCode_(0x7074737a) # this is "ptsz" in hexcode
+	windowPosition.setTo_([0, 0])
+	windowSize.setTo_([right - left, bottom - top])
+
+	# After this we do it anew since there might be some events swallowed otherwide
+	window = frontmost.attributes().objectWithName_("AXMainWindow").value().get()
+	windowPosition = window.propertyWithCode_(0x706f736e) # this is "posn" in hexcode
+	windowPosition.setTo_([left, top])
 when 2
+	# Two values => Move window to coords (center_x, center_y), prevent window from moving out of screen
 	target_x = appScreen.left + appScreen.width * targetArg[0].to_f
 	target_y = appScreen.top + appScreen.height * targetArg[1].to_f
 	pos_x = target_x - appRect.width * 0.5
@@ -81,6 +132,7 @@ when 2
 	end
 	window.setPosition_([pos_x, pos_y])
 when 4
+	# Four values => Move and resize window to coords (left, top, right, bottom)
 	target = Rect.new(targetArg[0].to_f, targetArg[1].to_f, targetArg[2].to_f, targetArg[3].to_f)
 
 	# these properties can be found in /System/Library/CoreServices/System Events.app/Contents/Resources/SystemEvents.sdef

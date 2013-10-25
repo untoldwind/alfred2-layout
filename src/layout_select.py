@@ -26,7 +26,9 @@ layouts = [
     Layout("movetopleft", "Move to top left", "0,0"),
     Layout("movebottomleft", "Move to bottom left", "0,1"),
     Layout("movetopright", "Move to top right", "1,0"),
-    Layout("movebottomright", "Move to bottom right", "1,1")
+    Layout("movebottomright", "Move to bottom right", "1,1"),
+    Layout("grow", "Grow window", "0.1667"),
+    Layout("shrink", "Shrink window", "-0.1667")
 ]
 
 for x1 in range(1, 4):

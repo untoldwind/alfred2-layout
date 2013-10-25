@@ -21,7 +21,12 @@ layouts = [
 	Layout("bottomleft", "Bottom left", "0,0.5,0.5,1"),
 	Layout("topright", "Top right", "0.5,0,1,0.5"),
 	Layout("bottomright", "Bottom right", "0.5,0.5,1,1"),
-    Layout("center", "Center", "0.1,0.1,0.9,0.9")
+    Layout("center", "Center", "0.1,0.1,0.9,0.9"),
+    Layout("movecenter", "Move to center", "0.5,0.5"),
+    Layout("movetopleft", "Move to top left", "0,0"),
+    Layout("movebottomleft", "Move to bottom left", "0,1"),
+    Layout("movetopright", "Move to top right", "1,0"),
+    Layout("movebottomright", "Move to bottom right", "1,1")
 ]
 
 for x1 in range(1, 4):

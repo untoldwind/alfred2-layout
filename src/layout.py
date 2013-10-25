@@ -38,7 +38,6 @@ class Rect:
 		return "Rect(%d, %d, %d, %d)" % (self.left, self.top, self.right, self.bottom)
 
 targetArg = sys.argv[1].split(",")
-target = Rect(float(targetArg[0]), float(targetArg[1]), float(targetArg[2]), float(targetArg[3]))
 
 screens = []
 
@@ -62,7 +61,24 @@ appScreens = [s for s in screens if s.intersects(appRect)]
 appScreens = sorted(appScreens, key=lambda s: s.intersection(appRect).area())
 appScreen = next(reversed(appScreens))
 
-window.propertyWithCode_(0x706f736e).setTo_([0, 0])
-window.propertyWithCode_(0x7074737a).setTo_([appScreen.width() * target.width(), appScreen.height() * target.height()])
-window = frontmost.attributes().objectWithName_("AXMainWindow").value().get()
-window.propertyWithCode_(0x706f736e).setTo_([appScreen.left + appScreen.width() * target.left, appScreen.top + appScreen.height() * target.top])
+if len(targetArg) == 2:
+	target_x = appScreen.left + appScreen.width() * float(targetArg[0])
+	target_y = appScreen.top + appScreen.height() * float(targetArg[1])
+	pos_x = target_x - appRect.width() * 0.5
+	pos_y = target_y - appRect.height() * 0.5
+	if pos_x < appScreen.left:
+		pos_x = appScreen.left
+	if pos_y < appScreen.top:
+		pos_y = appScreen.top
+	if pos_x + appRect.width() > appScreen.right:
+		pos_x = appScreen.right - appRect.width()
+	if pos_y + appRect.height() > appScreen.bottom:
+		pos_y = appScreen.bottom - appRect.height()
+	window.setPosition_([pos_x, pos_y])
+elif len(targetArg) == 4:
+	target = Rect(float(targetArg[0]), float(targetArg[1]), float(targetArg[2]), float(targetArg[3]))
+
+	window.propertyWithCode_(0x706f736e).setTo_([0, 0])
+	window.propertyWithCode_(0x7074737a).setTo_([appScreen.width() * target.width(), appScreen.height() * target.height()])
+	window = frontmost.attributes().objectWithName_("AXMainWindow").value().get()
+	window.propertyWithCode_(0x706f736e).setTo_([appScreen.left + appScreen.width() * target.left, appScreen.top + appScreen.height() * target.top])

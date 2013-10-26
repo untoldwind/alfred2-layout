@@ -36,6 +36,12 @@ It is multi-screen-able. Even though you cannot move windows from one screen to 
 * It the application supports scripting, the window is moved "directly". Unluckily some Applications do not support this, so there is a fallback using "SystemEvents". This only works if you have UI scripting enabled: [Graphic User Interface (GUI) Scripting](http://www.macosxautomation.com/applescript/uiscripting/)
 * At the moment there are no hotkeys defined, which should be straight forward though ...
 
+# Hacking
+
+If you are keen on adventures feel free to tweak the workflow any way you like. As a starter refer to the following wiki pages:
+* [Hacking the Mountain Lion version](https://github.com/untoldwind/alfred2-layout/wiki/Hacking-the-Mountain-Lion-version)
+* [Hacking the Mavericks version](https://github.com/untoldwind/alfred2-layout/wiki/Hacking-the-Mavericks-version)
+
 # Licence
 
 [MIT Licence](http://opensource.org/licenses/MIT)

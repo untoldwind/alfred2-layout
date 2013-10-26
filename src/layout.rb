@@ -5,7 +5,7 @@ include OSX
 OSX.require_framework 'ScriptingBridge'
 
 class Rect
-	attr_reader :left, :top, :right, :bottom
+	attr_accessor :left, :top, :right, :bottom
 
 	def initialize(left, top, right, bottom)
 		@left = left
@@ -39,7 +39,28 @@ class Rect
 	end
 end
 
-targetArg = ARGV[0].split(',')
+def setWindowBounds(process, window, bounds)
+	# these properties can be found in /System/Library/CoreServices/System Events.app/Contents/Resources/SystemEvents.sdef
+	# there is a little issue if the window is too big (i.e. partly outside screen), therefore we first move to 0,0
+	windowPosition = window.propertyWithCode_(0x706f736e) # this is "posn" in hexcode
+	windowSize = window.propertyWithCode_(0x7074737a) # this is "ptsz" in hexcode
+	windowPosition.setTo_([0, 0])
+	windowSize.setTo_([bounds.width, bounds.height])
+
+	# After this we do it anew since there might be some events swallowed otherwide
+	window = process.attributes().objectWithName_("AXMainWindow").value().get()
+	windowPosition = window.propertyWithCode_(0x706f736e) # this is "posn" in hexcode
+	windowPosition.setTo_([bounds.left, bounds.top])
+end
+
+commandAndTarget = ARGV[0].split(':')
+if commandAndTarget.size == 2
+	command = commandAndTarget[0]
+	targetArg = commandAndTarget[1].split(',')
+else
+	command = "set"
+	targetArg = commandAndTarget[0].split(',')
+end
 
 screens = []
 mainHeight = OSX::NSScreen.mainScreen().frame().size.height
@@ -60,59 +81,55 @@ appScreens = screens.select { |screen| screen.intersects(appRect) }
 appScreens = appScreens.sort { |a, b| b.intersection(appRect).area <=> a.intersection(appRect).area }
 appScreen = appScreens.first
 
+case command
+when 'resize'
+	target = appRect.clone
+	target.left = appRect.left - appScreen.width * targetArg[0].to_f
+	target.top = appRect.top - appScreen.height * targetArg[1].to_f
+	target.right = appRect.right + appScreen.width * targetArg[2].to_f
+	target.bottom = appRect.bottom + appScreen.height * targetArg[3].to_f
+	target = target.intersection(appScreen)
 
-case targetArg.size
-when 1
+	setWindowBounds(frontmost, window, target)
+when 'resizeAll'
 	# Single value => resize in all directions with sticks screen borders
 	resize_x = appScreen.width * targetArg[0].to_f
-	resize_y = appScreen.height * targetArg[0].to_f	
+	resize_y = appScreen.height * targetArg[0].to_f
+	target = appRect.clone
 	if (appRect.left - appScreen.left).abs < 0.01 * appScreen.width
 		if (appRect.right - appScreen.right).abs < 0.01 * appScreen.width
-			left = appScreen.left
-			right = appRect.right
+			target.left = appScreen.left
+			target.right = appRect.right
 		else
-			left = appScreen.left
-			right = appRect.right + resize_x
+			target.left = appScreen.left
+			target.right = appRect.right + resize_x
 		end
 	elsif (appRect.right - appScreen.right).abs < 0.01 * appScreen.width
-		left = appRect.left - resize_x
-		right = appScreen.right
+		target.left = appRect.left - resize_x
+		target.right = appScreen.right
 	else
-		left = appRect.left - resize_x * 0.5
-		right = appRect.right + resize_x * 0.5
+		target.left = appRect.left - resize_x * 0.5
+		target.right = appRect.right + resize_x * 0.5
 	end
 	if (appRect.top - appScreen.top).abs < 0.01 * appScreen.height
 		if (appRect.bottom - appScreen.bottom).abs < 0.01 * appScreen.height
-			top = appScreen.top
-			bottom = appRect.bottom
+			target.top = appScreen.top
+			target.bottom = appRect.bottom
 		else
-			top = appScreen.top
-			bottom = appRect.bottom + resize_y
+			target.top = appScreen.top
+			target.bottom = appRect.bottom + resize_y
 		end
 	elsif (appRect.bottom - appScreen.bottom).abs < 0.01 * appScreen.height
-		top = appRect.top - resize_y
-		bottom = appScreen.bottom
+		target.top = appRect.top - resize_y
+		target.bottom = appScreen.bottom
 	else
-		top = appRect.top - resize_y * 0.5
-		bottom = appRect.bottom + resize_y * 0.5
+		target.top = appRect.top - resize_y * 0.5
+		target.bottom = appRect.bottom + resize_y * 0.5
 	end
-	left = [left, appScreen.left].max
-	top = [top, appScreen.top].max
-	right = [right, appScreen.right].min
-	bottom = [bottom, appScreen.bottom].min
+	target = target.intersection(appScreen)
 
-	# these properties can be found in /System/Library/CoreServices/System Events.app/Contents/Resources/SystemEvents.sdef
-	# there is a little issue if the window is too big (i.e. partly outside screen), therefore we first move to 0,0
-	windowPosition = window.propertyWithCode_(0x706f736e) # this is "posn" in hexcode
-	windowSize = window.propertyWithCode_(0x7074737a) # this is "ptsz" in hexcode
-	windowPosition.setTo_([0, 0])
-	windowSize.setTo_([right - left, bottom - top])
-
-	# After this we do it anew since there might be some events swallowed otherwide
-	window = frontmost.attributes().objectWithName_("AXMainWindow").value().get()
-	windowPosition = window.propertyWithCode_(0x706f736e) # this is "posn" in hexcode
-	windowPosition.setTo_([left, top])
-when 2
+	setWindowBounds(frontmost, window, target)
+when 'move'
 	# Two values => Move window to coords (center_x, center_y), prevent window from moving out of screen
 	target_x = appScreen.left + appScreen.width * targetArg[0].to_f
 	target_y = appScreen.top + appScreen.height * targetArg[1].to_f
@@ -131,19 +148,13 @@ when 2
 		pos_y = appScreen.bottom - appRect.height
 	end
 	window.setPosition_([pos_x, pos_y])
-when 4
+when 'set'
 	# Four values => Move and resize window to coords (left, top, right, bottom)
-	target = Rect.new(targetArg[0].to_f, targetArg[1].to_f, targetArg[2].to_f, targetArg[3].to_f)
+	target = Rect.new(
+		appScreen.left + appScreen.width * targetArg[0].to_f, 
+		appScreen.top + appScreen.height * targetArg[1].to_f, 
+		appScreen.left + appScreen.width * targetArg[2].to_f, 
+		appScreen.top + appScreen.height * targetArg[3].to_f)
 
-	# these properties can be found in /System/Library/CoreServices/System Events.app/Contents/Resources/SystemEvents.sdef
-	# there is a little issue if the window is too big (i.e. partly outside screen), therefore we first move to 0,0
-	windowPosition = window.propertyWithCode_(0x706f736e) # this is "posn" in hexcode
-	windowSize = window.propertyWithCode_(0x7074737a) # this is "ptsz" in hexcode
-	windowPosition.setTo_([0, 0])
-	windowSize.setTo_([appScreen.width * target.width, appScreen.height * target.height])
-
-	# After this we do it anew since there might be some events swallowed otherwide
-	window = frontmost.attributes().objectWithName_("AXMainWindow").value().get()
-	windowPosition = window.propertyWithCode_(0x706f736e) # this is "posn" in hexcode
-	windowPosition.setTo_([appScreen.left + appScreen.width * target.left, appScreen.top + appScreen.height * target.top])
+	setWindowBounds(frontmost, window, target)
 end

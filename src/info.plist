@@ -28,6 +28,17 @@
 				<string></string>
 			</dict>
 		</array>
+		<key>9964D2C7-BC11-4D7B-BCD3-83FBA1313EAE</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>4109C8CA-8D0F-4B02-A658-9D6CB5630508</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
 	</dict>
 	<key>createdby</key>
 	<string>Bodo Junglas</string>
@@ -39,6 +50,33 @@
 	<string>Layout</string>
 	<key>objects</key>
 	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>62</integer>
+				<key>keyword</key>
+				<string>lay</string>
+				<key>script</key>
+				<string>/usr/bin/python layout_select.py "{query}"</string>
+				<key>subtext</key>
+				<string>Layout window</string>
+				<key>title</key>
+				<string>Layout window</string>
+				<key>type</key>
+				<integer>0</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>691EF607-FFE2-44E8-A264-F2D570686AAB</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
@@ -69,7 +107,7 @@ fi</string>
 				<key>argument</key>
 				<integer>3</integer>
 				<key>argumenttext</key>
-				<string>0.1,0.1,0.9,0.9</string>
+				<string>set:0.1,0.1,0.9,0.9</string>
 				<key>hotkey</key>
 				<integer>0</integer>
 				<key>hotmod</key>
@@ -91,27 +129,27 @@ fi</string>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>argumenttype</key>
-				<integer>1</integer>
-				<key>escaping</key>
-				<integer>62</integer>
-				<key>keyword</key>
-				<string>lay</string>
-				<key>script</key>
-				<string>/usr/bin/python layout_select.py "{query}"</string>
-				<key>subtext</key>
-				<string>Layout window</string>
-				<key>title</key>
-				<string>Layout window</string>
-				<key>type</key>
+				<key>action</key>
 				<integer>0</integer>
-				<key>withspace</key>
-				<true/>
+				<key>argument</key>
+				<integer>3</integer>
+				<key>argumenttext</key>
+				<string>move:0.5,0.5</string>
+				<key>hotkey</key>
+				<integer>0</integer>
+				<key>hotmod</key>
+				<integer>0</integer>
+				<key>hotstring</key>
+				<string></string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.input.scriptfilter</string>
+			<string>alfred.workflow.trigger.hotkey</string>
 			<key>uid</key>
-			<string>691EF607-FFE2-44E8-A264-F2D570686AAB</string>
+			<string>9964D2C7-BC11-4D7B-BCD3-83FBA1313EAE</string>
 			<key>version</key>
 			<integer>0</integer>
 		</dict>
@@ -123,7 +161,7 @@ fi</string>
 		<key>328173F0-A7F1-4EA9-BE6B-47353EAF5010</key>
 		<dict>
 			<key>ypos</key>
-			<real>20</real>
+			<real>140</real>
 		</dict>
 		<key>4109C8CA-8D0F-4B02-A658-9D6CB5630508</key>
 		<dict>
@@ -133,7 +171,12 @@ fi</string>
 		<key>691EF607-FFE2-44E8-A264-F2D570686AAB</key>
 		<dict>
 			<key>ypos</key>
-			<real>130</real>
+			<real>10</real>
+		</dict>
+		<key>9964D2C7-BC11-4D7B-BCD3-83FBA1313EAE</key>
+		<dict>
+			<key>ypos</key>
+			<real>270</real>
 		</dict>
 	</dict>
 	<key>webaddress</key>

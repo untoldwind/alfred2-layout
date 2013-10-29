@@ -39,12 +39,12 @@ class Rect
 	end
 end
 
-def setWindowBounds(process, window, bounds)
+def setWindowBounds(process, window, screen, bounds)
 	# these properties can be found in /System/Library/CoreServices/System Events.app/Contents/Resources/SystemEvents.sdef
 	# there is a little issue if the window is too big (i.e. partly outside screen), therefore we first move to 0,0
 	windowPosition = window.propertyWithCode_(0x706f736e) # this is "posn" in hexcode
 	windowSize = window.propertyWithCode_(0x7074737a) # this is "ptsz" in hexcode
-	windowPosition.setTo_([0, 0])
+	windowPosition.setTo_([screen.left, screen.top])
 	windowSize.setTo_([bounds.width, bounds.height])
 
 	# After this we do it anew since there might be some events swallowed otherwide
@@ -90,7 +90,7 @@ when 'resize'
 	target.bottom = appRect.bottom + appScreen.height * targetArg[3].to_f
 	target = target.intersection(appScreen)
 
-	setWindowBounds(frontmost, window, target)
+	setWindowBounds(frontmost, window, appScreen, target)
 when 'resizeAll'
 	# Single value => resize in all directions with sticks screen borders
 	resize_x = appScreen.width * targetArg[0].to_f
@@ -128,7 +128,7 @@ when 'resizeAll'
 	end
 	target = target.intersection(appScreen)
 
-	setWindowBounds(frontmost, window, target)
+	setWindowBounds(frontmost, window, appScreen, target)
 when 'move'
 	# Two values => Move window to coords (center_x, center_y), prevent window from moving out of screen
 	target_x = appScreen.left + appScreen.width * targetArg[0].to_f
@@ -156,5 +156,5 @@ when 'set'
 		appScreen.left + appScreen.width * targetArg[2].to_f, 
 		appScreen.top + appScreen.height * targetArg[3].to_f)
 
-	setWindowBounds(frontmost, window, target)
+	setWindowBounds(frontmost, window, appScreen, target)
 end

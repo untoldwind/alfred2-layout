@@ -42,21 +42,26 @@ end
 def setWindowBounds(process, window, screen, bounds)
 	# these properties can be found in /System/Library/CoreServices/System Events.app/Contents/Resources/SystemEvents.sdef
 	# there is a little issue if the window is too big (i.e. partly outside screen), therefore we first move to 0,0
-	windowPosition = window.propertyWithCode_(0x706f736e) # this is "posn" in hexcode
 	windowSize = window.propertyWithCode_(0x7074737a) # this is "ptsz" in hexcode
-	windowPosition.setTo_([screen.left, screen.top])
 	windowSize.setTo_([bounds.width, bounds.height])
 
 	# After this we do it anew since there might be some events swallowed otherwide
 	window = process.attributes().objectWithName_("AXMainWindow").value().get()
 	windowPosition = window.propertyWithCode_(0x706f736e) # this is "posn" in hexcode
 	windowPosition.setTo_([bounds.left, bounds.top])
+	windowSize = window.propertyWithCode_(0x7074737a) # this is "ptsz" in hexcode
+	windowSize.setTo_([bounds.width, bounds.height])
 end
 
 commandAndTarget = ARGV[0].split(':')
+screenOffset = 0
 if commandAndTarget.size == 2
 	command = commandAndTarget[0]
 	targetArg = commandAndTarget[1].split(',')
+elsif commandAndTarget.size == 3
+	command = commandAndTarget[0]
+	targetArg = commandAndTarget[1].split(',')	
+	screenOffset = commandAndTarget[2].to_i
 else
 	command = "set"
 	targetArg = commandAndTarget[0].split(',')
@@ -77,9 +82,20 @@ window = frontmost.attributes().objectWithName_("AXMainWindow").value().get()
 properties = window.properties()
 appRect = Rect.new(properties['position'][0].to_i, properties['position'][1].to_i, 
 				   properties['position'][0].to_i + properties['size'][0].to_i, properties['position'][1].to_i + properties['size'][1].to_i)
-appScreens = screens.select { |screen| screen.intersects(appRect) }
-appScreens = appScreens.sort { |a, b| b.intersection(appRect).area <=> a.intersection(appRect).area }
-appScreen = appScreens.first
+appScreenIdx = 0
+maxIntersectionArea = -1
+screens.each_with_index do |screen, index|
+	if screen.intersects(appRect) 
+		area = screen.intersection(appRect).area
+		if area > maxIntersectionArea
+			maxIntersectionArea = area
+			appScreenIdx = index
+		end
+	end
+end
+
+appScreenIdx = (appScreenIdx + screenOffset) % screens.size
+appScreen = screens[appScreenIdx]
 
 case command
 when 'resize'

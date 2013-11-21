@@ -39,6 +39,14 @@ class Rect
 	end
 end
 
+def findMainWindow(process)
+	window = process.attributes().objectWithName_("AXMainWindow").value().get()
+	if window.nil?
+		window = process.attributes().objectWithName_("AXFocusedWindow").value().get()
+	end
+	window	
+end
+
 def setWindowBounds(process, window, screen, bounds)
 	# these properties can be found in /System/Library/CoreServices/System Events.app/Contents/Resources/SystemEvents.sdef
 	# there is a little issue if the window is too big (i.e. partly outside screen), therefore we first move to 0,0
@@ -46,7 +54,7 @@ def setWindowBounds(process, window, screen, bounds)
 	windowSize.setTo_([bounds.width, bounds.height])
 
 	# After this we do it anew since there might be some events swallowed otherwide
-	window = process.attributes().objectWithName_("AXMainWindow").value().get()
+	window = findMainWindow(process)
 	windowPosition = window.propertyWithCode_(0x706f736e) # this is "posn" in hexcode
 	windowPosition.setTo_([bounds.left, bounds.top])
 	windowSize = window.propertyWithCode_(0x7074737a) # this is "ptsz" in hexcode
@@ -78,7 +86,7 @@ systemevents = OSX::SBApplication.applicationWithBundleIdentifier_("com.apple.sy
 
 frontmostPredicate = OSX::NSPredicate.predicateWithFormat("frontmost == true")
 frontmost = systemevents.processes().filteredArrayUsingPredicate_(frontmostPredicate).first
-window = frontmost.attributes().objectWithName_("AXMainWindow").value().get()
+window = findMainWindow(frontmost)
 properties = window.properties()
 appRect = Rect.new(properties['position'][0].to_i, properties['position'][1].to_i, 
 				   properties['position'][0].to_i + properties['size'][0].to_i, properties['position'][1].to_i + properties['size'][1].to_i)

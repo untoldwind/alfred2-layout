@@ -145,7 +145,7 @@ fi</string>
 				<key>argument</key>
 				<integer>3</integer>
 				<key>argumenttext</key>
-				<string>set:0.1,0.1,0.9,0.9</string>
+				<string>set:0,0,1,1:+1</string>
 				<key>hotkey</key>
 				<integer>0</integer>
 				<key>hotmod</key>

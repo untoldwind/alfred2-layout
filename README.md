@@ -25,6 +25,15 @@ The workflow itself is quite simple just typ in the keyword "lay" (or chose anot
 
 It is multi-screen-able. Even though you cannot move windows from one screen to another (yet?) the scripts tries to figure out with screen you mean (depending on the size of the visible area).
 
+## Additional not for the Mavericks version
+
+The Mavericks version now additionally support the "layother" keyword that moves and layout the current window to the other/next screen.
+
+Examples:
+* layother full = Move the current window to the other screen full size
+* layother topleft = Move the current window to the top-left quarter of the other screen
+* ... and so on
+
 # Screenshots
 
 ![Screenshot1](https://dl.dropboxusercontent.com/u/3815280/Bildschirmfoto%202013-09-24%20um%2013.54.58.png)

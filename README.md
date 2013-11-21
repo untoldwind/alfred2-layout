@@ -51,6 +51,8 @@ If you are keen on adventures feel free to tweak the workflow any way you like. 
 * [Hacking the Mountain Lion version](https://github.com/untoldwind/alfred2-layout/wiki/Hacking-the-Mountain-Lion-version)
 * [Hacking the Mavericks version](https://github.com/untoldwind/alfred2-layout/wiki/Hacking-the-Mavericks-version)
 
+Also take a look at the corresponding thread on the Alfred forums: http://www.alfredforum.com/topic/3154-yet-another-window-layout-workflow
+
 # Licence
 
 [MIT Licence](http://opensource.org/licenses/MIT)

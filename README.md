@@ -10,7 +10,7 @@ A simple window layouter based on an Alfred 2 workflow.
 
 ## Experimental
 
-* [bleeding edge for Mavericks](https://github.com/untoldwind/alfred2-layout/raw/perl/Layout.alfredworkflow)
+* [bleeding edge for Mavericks](https://github.com/untoldwind/alfred2-layout/raw/master/Layout.alfredworkflow)
 
 # Description
 

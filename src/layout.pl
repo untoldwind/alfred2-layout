@@ -131,8 +131,13 @@ package main;
 sub findMainWindow {
 	my ($process) = @_;
 	my $window = $process->attributes()->objectWithName_("AXMainWindow")->value()->get();
-	if ( !$window ) {
+	if ( !$$window ) {
+		# For some resone there is no AXMainWindow so we try AXFocusedWindow
 		$window = $process->attributes()->objectWithName_("AXFocusedWindow")->value()->get();
+	}
+	if ( !$$window ) {
+		# Still no luck, just try the first
+		$window = $process->windows()->objectAtIndex_(0);
 	}
 	$window;
 }
@@ -179,6 +184,7 @@ if (scalar(@commandAndTarget) == 2) {
 	@targetArg = split(/,/, @commandAndTarget[0]);
 }
 
+# Here we extract all information about the available screens (and their visiable frames)
 my @screens;
 my @mainScreenFrame = ObjCStruct::NSRect->unpack(NSScreen->mainScreen()->frame());
 my $enumerator = NSScreen->screens()->objectEnumerator();
@@ -189,6 +195,7 @@ while($obj = $enumerator->nextObject() and $$obj) {
 	push(@screens, $screen);	
 }
 
+# Now we query the System-Events for the frontmost process and its main window
 my $systemevents = SBApplication->applicationWithBundleIdentifier_("com.apple.systemevents");
 my $frontmostPredicate = NSPredicate->predicateWithFormat_("frontmost == true");
 my $frontmost = $systemevents->processes()->filteredArrayUsingPredicate_($frontmostPredicate)->firstObject();
@@ -201,6 +208,7 @@ my $appRect = Rect->new($position->objectAtIndex_(0)->floatValue(),
 						$position->objectAtIndex_(0)->floatValue() + $size->objectAtIndex_(0)->floatValue(),
 						$position->objectAtIndex_(1)->floatValue() + $size->objectAtIndex_(1)->floatValue());
 
+# ... and figure out on which screen it is (largest visible area wins)
 my $appScreenIdx = 0;
 my $maxIntersectionArea = -1;
 for my $index (0 .. $#screens) {
@@ -212,16 +220,19 @@ for my $index (0 .. $#screens) {
 		}		
 	}
 }
+# ... and add a screen offset (if there is one, i.e. move window to some different screen)
 $appScreenIdx = ($appScreenIdx + $screenOffset) % scalar(@screens);
 my $appScreen = @screens[$appScreenIdx];
 
 given($command) {
 	when('fullscreen') {
+		# Toggle fullscreen
 		my $isFullScreen = $window->attributes()->objectWithName_('AXFullScreen')->value()->get()->boolValue();
 
 		$window->attributes()->objectWithName_('AXFullScreen')->value()->setTo_(NSNumber->numberWithBool_(!$isFullScreen));		
 	};
 	when('resize') {
+		# Simple resize of the window (grow/shrink any desired corner)
 		my $target = Rect->new(
 						$appRect->left - $appScreen->width * @targetArg[0],
 						$appRect->top - $appScreen->height * @targetArg[1],

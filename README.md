@@ -7,6 +7,7 @@ A simple window layouter based on an Alfred 2 workflow.
 
 * [v1.0 for 10.8 Mountain Lion](https://github.com/untoldwind/alfred2-layout/raw/1.0_Mountain_Lion/Layout.alfredworkflow)
 * [v1.1 for 10.9 Mavericks](https://github.com/untoldwind/alfred2-layout/raw/1.1_Mavericks/Layout.alfredworkflow)
+* No version for Yosemite yet, I'm on it.
 
 ## Experimental
 

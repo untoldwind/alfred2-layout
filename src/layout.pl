@@ -3,6 +3,14 @@
 use strict;
 use feature 'switch';
 use Foundation;
+use Sys::Syslog qw(:standard :macros);
+
+my $debug = 0;
+
+$debug && Sys::Syslog::setlogsock("unix"); 
+$debug && openlog("Alfred2 Layout", "ndelay,pid", LOG_USER);
+
+$debug && syslog(LOG_NOTICE, "Starting");
 
 # Load the Scripting-Bridge
 @NSScreen::ISA = @SBApplication::ISA = qw(PerlObjCBridge);
@@ -154,14 +162,18 @@ sub setWindowBounds {
 
 	# these properties can be found in /System/Library/CoreServices/System Events.app/Contents/Resources/SystemEvents.sdef
 	# there is a little issue if the window is too big (i.e. partly outside screen), therefore we first move to 0,0
+	$debug && syslog(LOG_NOTICE, sprintf("Set size: %d %d", $bounds->width, $bounds->height));
 	my $windowSize = $window->propertyWithCode_(unpack("N", "ptsz"));
 	$windowSize->setTo_($size);
+
 	# Don't know why the $window becomes invalid after this, it just does (sometimes)
 	$window = findMainWindow($process);
 	my $windowPosition = $window->propertyWithCode_(unpack("N", "posn"));
+	$debug && syslog(LOG_NOTICE, sprintf("Set size: %d %d", $bounds->{_left}, $bounds->{_top}));
 	$windowPosition->setTo_($pos);
 	# Don't know why the $window becomes invalid after this, it just does (sometimes)
 	$window = findMainWindow($process);
+	$debug && syslog(LOG_NOTICE, sprintf("Set size: %d %d", $bounds->width, $bounds->height));
 	$windowSize = $window->propertyWithCode_(unpack("N", "ptsz"));
 	$windowSize->setTo_($size);
 }
@@ -186,20 +198,28 @@ if (scalar(@commandAndTarget) == 2) {
 
 # Here we extract all information about the available screens (and their visiable frames)
 my @screens;
-my @mainScreenFrame = ObjCStruct::NSRect->unpack(NSScreen->mainScreen()->frame());
 my $enumerator = NSScreen->screens()->objectEnumerator();
 my $obj;
 while($obj = $enumerator->nextObject() and $$obj) {
+	my @fullRect = ObjCStruct::NSRect->unpack($obj->frame());
 	my @rect = ObjCStruct::NSRect->unpack($obj->visibleFrame());
-	my $screen = Rect->new(@rect[0], @mainScreenFrame[3] - @rect[1] - @rect[3], @rect[0] + @rect[2], @mainScreenFrame[3] - @rect[1]);
-	push(@screens, $screen);	
+	my $screen = Rect->new(@rect[0], @fullRect[3] - @rect[1] - @rect[3], @rect[0] + @rect[2], @fullRect[3] - @rect[1]);
+	push(@screens, $screen);
+	$debug && syslog(LOG_NOTICE, sprintf("Screen frame: %d %d %d %d %d %d %d %d", @fullRect[0], @fullRect[1], @fullRect[2], @fullRect[3], @rect[0], @rect[1], @rect[2], @rect[3]));
+	$debug && syslog(LOG_NOTICE, sprintf("Screen rect: %d %d %d %d", $screen->left, $screen->top, $screen->right, $screen->bottom));
 }
 
 # Now we query the System-Events for the frontmost process and its main window
 my $systemevents = SBApplication->applicationWithBundleIdentifier_("com.apple.systemevents");
 my $frontmostPredicate = NSPredicate->predicateWithFormat_("frontmost == true");
 my $frontmost = $systemevents->processes()->filteredArrayUsingPredicate_($frontmostPredicate)->firstObject();
+
+$debug && syslog(LOG_NOTICE, sprintf("Frontmost process: %s", $frontmost->name()->cString()));
+
 my $window = findMainWindow($frontmost);
+
+$debug && syslog(LOG_NOTICE, sprintf("Window title: %s", $window->title()->cString()));
+
 my $properties = $window->properties();
 my $position = $properties->objectForKey_("position");
 my $size = $properties->objectForKey_("size");
@@ -207,6 +227,8 @@ my $appRect = Rect->new($position->objectAtIndex_(0)->floatValue(),
 						$position->objectAtIndex_(1)->floatValue(),
 						$position->objectAtIndex_(0)->floatValue() + $size->objectAtIndex_(0)->floatValue(),
 						$position->objectAtIndex_(1)->floatValue() + $size->objectAtIndex_(1)->floatValue());
+
+$debug && syslog(LOG_NOTICE, sprintf("Window rect: %d %d %d %d", $appRect->left, $appRect->top, $appRect->right, $appRect->bottom));
 
 # ... and figure out on which screen it is (largest visible area wins)
 my $appScreenIdx = 0;
@@ -223,6 +245,8 @@ for my $index (0 .. $#screens) {
 # ... and add a screen offset (if there is one, i.e. move window to some different screen)
 $appScreenIdx = ($appScreenIdx + $screenOffset) % scalar(@screens);
 my $appScreen = @screens[$appScreenIdx];
+
+$debug && syslog(LOG_NOTICE, sprintf("Selected screen rect: %d %d %d %d", $appScreen->left, $appScreen->top, $appScreen->right, $appScreen->bottom));
 
 given($command) {
 	when('fullscreen') {

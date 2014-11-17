@@ -4,6 +4,8 @@
 <dict>
 	<key>bundleid</key>
 	<string>de.leanovate.alfred.layout</string>
+	<key>category</key>
+	<string>Productivity</string>
 	<key>connections</key>
 	<dict>
 		<key>1DABD84A-FE15-4A4F-8D33-40231B8E1DA3</key>
@@ -165,11 +167,11 @@
 				<integer>0</integer>
 				<key>hotmod</key>
 				<integer>0</integer>
-				<key>hotstring</key>
-				<string></string>
 				<key>leftcursor</key>
 				<false/>
 				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
 				<integer>0</integer>
 			</dict>
 			<key>type</key>
@@ -177,7 +179,7 @@
 			<key>uid</key>
 			<string>328173F0-A7F1-4EA9-BE6B-47353EAF5010</string>
 			<key>version</key>
-			<integer>0</integer>
+			<integer>1</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -192,11 +194,11 @@
 				<integer>0</integer>
 				<key>hotmod</key>
 				<integer>0</integer>
-				<key>hotstring</key>
-				<string></string>
 				<key>leftcursor</key>
 				<false/>
 				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
 				<integer>0</integer>
 			</dict>
 			<key>type</key>
@@ -204,7 +206,7 @@
 			<key>uid</key>
 			<string>9964D2C7-BC11-4D7B-BCD3-83FBA1313EAE</string>
 			<key>version</key>
-			<integer>0</integer>
+			<integer>1</integer>
 		</dict>
 		<dict>
 			<key>config</key>

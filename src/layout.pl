@@ -156,6 +156,9 @@ sub setWindowBounds {
 	my $pos = NSMutableArray->arrayWithCapacity_(2);
 	$pos->addObject_(NSNumber->numberWithFloat_($bounds->{_left}));
 	$pos->addObject_(NSNumber->numberWithFloat_($bounds->{_top}));
+	my $smallersize = NSMutableArray->arrayWithCapacity_(2);
+	$smallersize->addObject_(NSNumber->numberWithFloat_($bounds->width * 0.9));
+	$smallersize->addObject_(NSNumber->numberWithFloat_($bounds->height * 0.9));
 	my $size = NSMutableArray->arrayWithCapacity_(2);
 	$size->addObject_(NSNumber->numberWithFloat_($bounds->width));
 	$size->addObject_(NSNumber->numberWithFloat_($bounds->height));
@@ -164,7 +167,7 @@ sub setWindowBounds {
 	# there is a little issue if the window is too big (i.e. partly outside screen), therefore we first move to 0,0
 	$debug && syslog(LOG_NOTICE, sprintf("Set size: %d %d", $bounds->width, $bounds->height));
 	my $windowSize = $window->propertyWithCode_(unpack("N", "ptsz"));
-	$windowSize->setTo_($size);
+	$windowSize->setTo_($smallersize);
 
 	# Don't know why the $window becomes invalid after this, it just does (sometimes)
 	$window = findMainWindow($process);
@@ -198,14 +201,14 @@ if (scalar(@commandAndTarget) == 2) {
 
 # Here we extract all information about the available screens (and their visiable frames)
 my @screens;
+my @mainScreenFrame = ObjCStruct::NSRect->unpack(NSScreen->mainScreen()->frame());
 my $enumerator = NSScreen->screens()->objectEnumerator();
 my $obj;
 while($obj = $enumerator->nextObject() and $$obj) {
-	my @fullRect = ObjCStruct::NSRect->unpack($obj->frame());
 	my @rect = ObjCStruct::NSRect->unpack($obj->visibleFrame());
-	my $screen = Rect->new(@rect[0], @fullRect[3] - @rect[1] - @rect[3], @rect[0] + @rect[2], @fullRect[3] - @rect[1]);
+	my $screen = Rect->new(@rect[0], @mainScreenFrame[3] - @rect[1] - @rect[3], @rect[0] + @rect[2], @mainScreenFrame[3] - @rect[1]);
 	push(@screens, $screen);
-	$debug && syslog(LOG_NOTICE, sprintf("Screen frame: %d %d %d %d %d %d %d %d", @fullRect[0], @fullRect[1], @fullRect[2], @fullRect[3], @rect[0], @rect[1], @rect[2], @rect[3]));
+	$debug && syslog(LOG_NOTICE, sprintf("Screen frame: %d %d %d %d %d %d %d %d", @mainScreenFrame[0], @mainScreenFrame[1], @mainScreenFrame[2], @mainScreenFrame[3], @rect[0], @rect[1], @rect[2], @rect[3]));
 	$debug && syslog(LOG_NOTICE, sprintf("Screen rect: %d %d %d %d", $screen->left, $screen->top, $screen->right, $screen->bottom));
 }
 

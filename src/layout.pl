@@ -144,8 +144,15 @@ sub findMainWindow {
 		$window = $process->attributes()->objectWithName_("AXFocusedWindow")->value()->get();
 	}
 	if ( !$$window ) {
-		# Still no luck, just try the first
-		$window = $process->windows()->objectAtIndex_(0);
+		my $enumerator = $process->windows()->objectEnumerator();
+		my $obj;
+
+		while($obj = $enumerator->nextObject() and $$obj) {
+			$window = $obj->get();
+			if ($window->focused()) {
+				last;
+			}
+		}
 	}
 	$window;
 }
@@ -166,19 +173,15 @@ sub setWindowBounds {
 	# these properties can be found in /System/Library/CoreServices/System Events.app/Contents/Resources/SystemEvents.sdef
 	# there is a little issue if the window is too big (i.e. partly outside screen), therefore we first move to 0,0
 	$debug && syslog(LOG_NOTICE, sprintf("Set size: %d %d", $bounds->width, $bounds->height));
-	my $windowSize = $window->propertyWithCode_(unpack("N", "ptsz"));
-	$windowSize->setTo_($smallersize);
+	$window->size()->setTo_($smallersize);
 
 	# Don't know why the $window becomes invalid after this, it just does (sometimes)
-	$window = findMainWindow($process);
 	my $windowPosition = $window->propertyWithCode_(unpack("N", "posn"));
 	$debug && syslog(LOG_NOTICE, sprintf("Set size: %d %d", $bounds->{_left}, $bounds->{_top}));
-	$windowPosition->setTo_($pos);
+	$window->position()->setTo_($pos);
 	# Don't know why the $window becomes invalid after this, it just does (sometimes)
-	$window = findMainWindow($process);
 	$debug && syslog(LOG_NOTICE, sprintf("Set size: %d %d", $bounds->width, $bounds->height));
-	$windowSize = $window->propertyWithCode_(unpack("N", "ptsz"));
-	$windowSize->setTo_($size);
+	$window->size()->setTo_($size);
 }
 
 # Extract commandline parameters to: $command, $targetArg and $screenOffset
@@ -223,9 +226,8 @@ my $window = findMainWindow($frontmost);
 
 $debug && syslog(LOG_NOTICE, sprintf("Window title: %s", $window->title()->cString()));
 
-my $properties = $window->properties();
-my $position = $properties->objectForKey_("position");
-my $size = $properties->objectForKey_("size");
+my $position = $window->position()->get();
+my $size = $window->size()->get();
 my $appRect = Rect->new($position->objectAtIndex_(0)->floatValue(), 
 						$position->objectAtIndex_(1)->floatValue(),
 						$position->objectAtIndex_(0)->floatValue() + $size->objectAtIndex_(0)->floatValue(),

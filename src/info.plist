@@ -4,8 +4,6 @@
 <dict>
 	<key>bundleid</key>
 	<string>de.leanovate.alfred.layout</string>
-	<key>category</key>
-	<string>Productivity</string>
 	<key>connections</key>
 	<dict>
 		<key>1DABD84A-FE15-4A4F-8D33-40231B8E1DA3</key>

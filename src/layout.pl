@@ -270,6 +270,26 @@ given($command) {
 
 		setWindowBounds($frontmost, $window, $appScreen, $target);
 	};
+	when('resizeAbs') {
+		my $width = @targetArg[0];
+		my $height = @targetArg[1];
+		my $left = $appRect->left;
+		my $top = $appRect->top;
+
+		if ( $left + $width > $appScreen->left + $appScreen->width ) {
+			$left = $appScreen->left + $appScreen->width - $width;
+		}
+		if ( $top + $height > $appScreen->top + $appScreen->height ) {
+			$top = $appScreen->top + $appScreen->height - $height;
+		}
+		my $target = Rect->new(
+						$left,
+						$top,
+						$left + $width,
+						$top + @targetArg[1]);
+
+		setWindowBounds($frontmost, $window, $appScreen, $target);
+	};
 	when('resizeAll') {
 		# Single value => resize in all directions with sticks screen borders
 		my $resize_x = $appScreen->width * @targetArg[0];

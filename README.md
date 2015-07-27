@@ -13,6 +13,10 @@ A simple window layouter based on an Alfred 2 workflow.
 
 * [bleeding edge for Mavericks/Yosemite](https://github.com/untoldwind/alfred2-layout/raw/master/Layout.alfredworkflow)
 
+Also via Packal:
+
+* http://www.packal.org/workflow/alfred2-layout
+
 # Description
 
 The workflow itself is quite simple just typ in the keyword "lay" (or chose another of your liking) followed by:

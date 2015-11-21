@@ -5,15 +5,15 @@ use feature 'switch';
 use Foundation;
 use Sys::Syslog qw(:standard :macros);
 
-my $debug = 0;
+my $debug = 1;
 
-$debug && Sys::Syslog::setlogsock("unix"); 
+$debug && Sys::Syslog::setlogsock("unix");
 $debug && openlog("Alfred2 Layout", "ndelay,pid", LOG_USER);
 
 $debug && syslog(LOG_NOTICE, "Starting");
 
 # Load the Scripting-Bridge
-@NSScreen::ISA = @SBApplication::ISA = qw(PerlObjCBridge);
+@NSScreen::ISA = @SBApplication::ISA = @NSUserDefaults::ISA = qw(PerlObjCBridge);
 
 NSBundle->bundleWithPath_(
     '/System/Library/Frameworks/ScriptingBridge.framework' # Loads AppKit too
@@ -82,6 +82,12 @@ sub area {
 sub max ($$) { $_[$_[0] < $_[1]] }
 sub min ($$) { $_[$_[0] > $_[1]] }
 
+sub fixMenuBarHidden {
+    my $self = shift;
+    $self->{_height} += $self->{_top};
+    $self->{_top} = 0;
+}
+
 # Helper class ObjCStruct to handle NSPoint, NSSize and NSRect
 # Quite an ugly mess actually
 
@@ -109,7 +115,7 @@ sub new {
     bless my $obj = \$int_ptr, ref($pack) || $pack;
     return $obj;
 }
-    
+
 sub DESTROY { delete $heap{${$_[0]}} }
 
 package ObjCStruct::NSPoint;
@@ -204,12 +210,16 @@ if (scalar(@commandAndTarget) == 2) {
 
 # Here we extract all information about the available screens (and their visiable frames)
 my @screens;
+my $menuAutoHide = NSUserDefaults->standardUserDefaults()->boolForKey_("_HIHideMenuBar");
 my @mainScreenFrame = ObjCStruct::NSRect->unpack(NSScreen->mainScreen()->frame());
 my $enumerator = NSScreen->screens()->objectEnumerator();
 my $obj;
 while($obj = $enumerator->nextObject() and $$obj) {
 	my @rect = ObjCStruct::NSRect->unpack($obj->visibleFrame());
 	my $screen = Rect->new(@rect[0], @mainScreenFrame[3] - @rect[1] - @rect[3], @rect[0] + @rect[2], @mainScreenFrame[3] - @rect[1]);
+    if ($menuAutoHide) {
+        $screen->fixMenuBarHidden();
+    }
 	push(@screens, $screen);
 	$debug && syslog(LOG_NOTICE, sprintf("Screen frame: %d %d %d %d %d %d %d %d", @mainScreenFrame[0], @mainScreenFrame[1], @mainScreenFrame[2], @mainScreenFrame[3], @rect[0], @rect[1], @rect[2], @rect[3]));
 	$debug && syslog(LOG_NOTICE, sprintf("Screen rect: %d %d %d %d", $screen->left, $screen->top, $screen->right, $screen->bottom));
@@ -228,7 +238,7 @@ $debug && syslog(LOG_NOTICE, sprintf("Window title: %s", $window->title()->cStri
 
 my $position = $window->position()->get();
 my $size = $window->size()->get();
-my $appRect = Rect->new($position->objectAtIndex_(0)->floatValue(), 
+my $appRect = Rect->new($position->objectAtIndex_(0)->floatValue(),
 						$position->objectAtIndex_(1)->floatValue(),
 						$position->objectAtIndex_(0)->floatValue() + $size->objectAtIndex_(0)->floatValue(),
 						$position->objectAtIndex_(1)->floatValue() + $size->objectAtIndex_(1)->floatValue());
@@ -244,7 +254,7 @@ for my $index (0 .. $#screens) {
 		if ( $area > $maxIntersectionArea ) {
 			$maxIntersectionArea = $area;
 			$appScreenIdx = $index;
-		}		
+		}
 	}
 }
 # ... and add a screen offset (if there is one, i.e. move window to some different screen)
@@ -258,7 +268,7 @@ given($command) {
 		# Toggle fullscreen
 		my $isFullScreen = $window->attributes()->objectWithName_('AXFullScreen')->value()->get()->boolValue();
 
-		$window->attributes()->objectWithName_('AXFullScreen')->value()->setTo_(NSNumber->numberWithBool_(!$isFullScreen));		
+		$window->attributes()->objectWithName_('AXFullScreen')->value()->setTo_(NSNumber->numberWithBool_(!$isFullScreen));
 	};
 	when('resize') {
 		# Simple resize of the window (grow/shrink any desired corner)
@@ -344,7 +354,7 @@ given($command) {
 			$pos_x = $appScreen->right - $appRect->width;
 		}
 		if ($pos_y + $appRect->height > $appScreen->bottom) {
-			$pos_y = $appScreen->bottom - $appRect->height;			
+			$pos_y = $appScreen->bottom - $appRect->height;
 		}
 		my $pos = NSMutableArray->arrayWithCapacity_(2);
 		$pos->addObject_(NSNumber->numberWithFloat_($pos_x));
@@ -355,9 +365,9 @@ given($command) {
 	when('set') {
 		# Four values => Move and resize window to coords (left, top, right, bottom)
 		my $target = Rect->new(
-						$appScreen->left + $appScreen->width * @targetArg[0], 
-						$appScreen->top + $appScreen->height * @targetArg[1], 
-						$appScreen->left + $appScreen->width * @targetArg[2], 
+						$appScreen->left + $appScreen->width * @targetArg[0],
+						$appScreen->top + $appScreen->height * @targetArg[1],
+						$appScreen->left + $appScreen->width * @targetArg[2],
 						$appScreen->top + $appScreen->height * @targetArg[3]);
 
 		setWindowBounds($frontmost, $window, $appScreen, $target);

@@ -4,8 +4,9 @@ use strict;
 use feature 'switch';
 use Foundation;
 use Sys::Syslog qw(:standard :macros);
+use utf8;
 
-my $debug = 1;
+my $debug = 0;
 
 $debug && Sys::Syslog::setlogsock("unix");
 $debug && openlog("Alfred2 Layout", "ndelay,pid", LOG_USER);
@@ -230,11 +231,18 @@ my $systemevents = SBApplication->applicationWithBundleIdentifier_("com.apple.sy
 my $frontmostPredicate = NSPredicate->predicateWithFormat_("frontmost == true");
 my $frontmost = $systemevents->processes()->filteredArrayUsingPredicate_($frontmostPredicate)->firstObject();
 
-$debug && syslog(LOG_NOTICE, sprintf("Frontmost process: %s", $frontmost->name()->cString()));
+if ($debug) {
+    my $processName = sprintf("Frontmost process: %s", $frontmost->name()->UTF8String());
+    utf8::encode($processName);
+    syslog(LOG_NOTICE, $processName);
+}
 
 my $window = findMainWindow($frontmost);
-
-$debug && syslog(LOG_NOTICE, sprintf("Window title: %s", $window->title()->cString()));
+if ($debug) {
+    my $title = sprintf("Window title: %s", $window->title()->UTF8String());
+    utf8::encode($title);
+    syslog(LOG_NOTICE, $title);
+}
 
 my $position = $window->position()->get();
 my $size = $window->size()->get();

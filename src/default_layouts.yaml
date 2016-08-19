@@ -1,4 +1,5 @@
 - { name: "togglefullscreen", display: "Toggle full screen mode",      forOtherScreen: No,  command: "fullscreen:toggle" }
+- { name: "minimize",         display: "Minimize window",              forOtherScreen: No,  command: "minimize:toggle" }
 - { name: "full",             display: "Full",                         forOtherScreen: Yes, command: "set:0,0,1,1" }
 - { name: "left",             display: "Left",                         forOtherScreen: Yes, command: "set:0,0,0.5,1" }
 - { name: "top",              display: "Top",                          forOtherScreen: Yes, command: "set:0,0,1,0.5" }

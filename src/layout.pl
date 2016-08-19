@@ -278,6 +278,9 @@ given($command) {
 
 		$window->attributes()->objectWithName_('AXFullScreen')->value()->setTo_(NSNumber->numberWithBool_(!$isFullScreen));
 	};
+	when('minimize') {
+		$window->attributes()->objectWithName_('AXMinimized')->value()->setTo_(NSNumber->numberWithBool_(1));
+	};
 	when('resize') {
 		# Simple resize of the window (grow/shrink any desired corner)
 		my $target = Rect->new(

@@ -9,7 +9,7 @@ A simple window layouter based on an Alfred 2 workflow.
 * [v1.1 for 10.9 Mavericks](https://github.com/untoldwind/alfred2-layout/raw/1.1_Mavericks/Layout.alfredworkflow)
 * [v1.2 for 10.10 Yosemite](https://github.com/untoldwind/alfred2-layout/raw/1.2_Yosemite/Layout.alfredworkflow)
 * [v1.3 for 10.10 Yosemite](https://github.com/untoldwind/alfred2-layout/raw/1.3_Yosemite/Layout.alfredworkflow)
-* [v1.4 for 10.11 El Capitan](https://github.com/untoldwind/alfred2-layout/raw/1.4_El_Capitan/Layout.alfredworkflow)
+* [v1.5 for 10.11 El Capitan](https://github.com/untoldwind/alfred2-layout/raw/1.5_El_Capitan/Layout.alfredworkflow)
 
 ## Experimental
 

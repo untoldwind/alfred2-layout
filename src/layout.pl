@@ -279,6 +279,11 @@ given($command) {
 		$window->attributes()->objectWithName_('AXFullScreen')->value()->setTo_(NSNumber->numberWithBool_(!$isFullScreen));
 	};
 	when('minimize') {
+		my $isFullScreen = $window->attributes()->objectWithName_('AXFullScreen')->value()->get()->boolValue();
+		if($isFullScreen) {
+			$window->attributes()->objectWithName_('AXFullScreen')->value()->setTo_(NSNumber->numberWithBool_(0));
+			sleep 1;
+		}
 		$window->attributes()->objectWithName_('AXMinimized')->value()->setTo_(NSNumber->numberWithBool_(1));
 	};
 	when('resize') {

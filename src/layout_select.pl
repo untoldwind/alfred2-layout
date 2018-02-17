@@ -18,12 +18,17 @@ sub expand_tilde {
 
 my $pattern = '.*';
 my @layouts;
-my $layouts_file_legacy = $ENV{'LAYOUTS_FILE'} || $ENV{'HOME'} . '/Library/Application Support/Alfred 2/Workflow Data/de.leanovate.alfred.layout/layouts.yaml';
+my $layouts_file_user = $ENV{'LAYOUTS_FILE'};
+my $layouts_file_legacy = $ENV{'HOME'} . '/Library/Application Support/Alfred 2/Workflow Data/de.leanovate.alfred.layout/layouts.yaml';
 my $layouts_file = './Data/de.leanovate.alfred.layout/layouts.yaml';
 
 $layouts_file_legacy = expand_tilde($layouts_file_legacy);
 
-if ( -f $layouts_file ) {
+if ( -f $layouts_file_user ) {
+    print STDERR "Reading user layout options from: " . $layouts_file_user . "\n";
+
+	@layouts = @{LoadFile($layouts_file_user)}
+} elsif ( -f $layouts_file ) {
 	print STDERR "Reading layout options from: " . $layouts_file . "\n";
 
 	@layouts = @{LoadFile($layouts_file)}

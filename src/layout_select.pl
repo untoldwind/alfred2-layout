@@ -18,7 +18,7 @@ sub expand_tilde {
 
 my $pattern = '.*';
 my @layouts;
-my $layouts_file_legacy = $ENV{'HOME'} . '/Library/Application Support/Alfred 2/Workflow Data/de.leanovate.alfred.layout/layouts.yaml';
+my $layouts_file_legacy = $ENV{'LAYOUTS_FILE'} || $ENV{'HOME'} . '/Library/Application Support/Alfred 2/Workflow Data/de.leanovate.alfred.layout/layouts.yaml';
 my $layouts_file = './Data/de.leanovate.alfred.layout/layouts.yaml';
 
 $layouts_file_legacy = expand_tilde($layouts_file_legacy);

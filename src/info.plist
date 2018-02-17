@@ -62,7 +62,7 @@
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>5DD314C2-0AF2-46A3-8880-09DD6D56B01E</string>
+				<string>D9A2805E-9CBF-42AE-A4B6-336AFECF6D80</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -72,7 +72,7 @@
 			</dict>
 			<dict>
 				<key>destinationuid</key>
-				<string>9D883753-5A00-4863-B525-F8584DBA0FD1</string>
+				<string>00A9299A-443B-4845-93AE-96989F027A63</string>
 				<key>modifiers</key>
 				<integer>1048576</integer>
 				<key>modifiersubtext</key>
@@ -97,6 +97,10 @@
 			<dict>
 				<key>alfredfiltersresults</key>
 				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
 				<key>argumenttype</key>
 				<integer>1</integer>
 				<key>escaping</key>
@@ -164,6 +168,10 @@
 			<dict>
 				<key>alfredfiltersresults</key>
 				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
 				<key>argumenttype</key>
 				<integer>1</integer>
 				<key>escaping</key>
@@ -267,38 +275,6 @@
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>concurrently</key>
-				<false/>
-				<key>escaping</key>
-				<integer>62</integer>
-				<key>script</key>
-				<string>
-if [ ! -d ~/Library/Application\ Support/Alfred\ 2/Workflow\ Data/de.leanovate.alfred.layout ]; then
-  mkdir -p ~/Library/Application\ Support/Alfred\ 2/Workflow\ Data/de.leanovate.alfred.layout
-fi
-
-if [ ! -e ~/Library/Application\ Support/Alfred\ 2/Workflow\ Data/de.leanovate.alfred.layout/layouts.yaml ]; then
-  cp default_layouts.yaml ~/Library/Application\ Support/Alfred\ 2/Workflow\ Data/de.leanovate.alfred.layout/layouts.yaml
-fi
-
-open ~/Library/Application\ Support/Alfred\ 2/Workflow\ Data/de.leanovate.alfred.layout/layouts.yaml</string>
-				<key>scriptargtype</key>
-				<integer>0</integer>
-				<key>scriptfile</key>
-				<string></string>
-				<key>type</key>
-				<integer>0</integer>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.script</string>
-			<key>uid</key>
-			<string>5DD314C2-0AF2-46A3-8880-09DD6D56B01E</string>
-			<key>version</key>
-			<integer>2</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>argumenttype</key>
 				<integer>2</integer>
 				<key>keyword</key>
@@ -323,20 +299,11 @@ open ~/Library/Application\ Support/Alfred\ 2/Workflow\ Data/de.leanovate.alfred
 				<key>concurrently</key>
 				<false/>
 				<key>escaping</key>
-				<integer>127</integer>
+				<integer>102</integer>
 				<key>script</key>
-				<string>
-if [ ! -d ~/Library/Application\ Support/Alfred\ 2/Workflow\ Data/de.leanovate.alfred.layout ]; then
-  mkdir -p ~/Library/Application\ Support/Alfred\ 2/Workflow\ Data/de.leanovate.alfred.layout
-fi
-
-if [ ! -e ~/Library/Application\ Support/Alfred\ 2/Workflow\ Data/de.leanovate.alfred.layout/layouts.yaml ]; then
-  cp default_layouts.yaml ~/Library/Application\ Support/Alfred\ 2/Workflow\ Data/de.leanovate.alfred.layout/layouts.yaml
-fi
-
-open ~/Library/Application\ Support/Alfred\ 2/Workflow\ Data/de.leanovate.alfred.layout</string>
+				<string>/bin/bash lay_config.sh</string>
 				<key>scriptargtype</key>
-				<integer>0</integer>
+				<integer>1</integer>
 				<key>scriptfile</key>
 				<string></string>
 				<key>type</key>
@@ -345,7 +312,30 @@ open ~/Library/Application\ Support/Alfred\ 2/Workflow\ Data/de.leanovate.alfred
 			<key>type</key>
 			<string>alfred.workflow.action.script</string>
 			<key>uid</key>
-			<string>9D883753-5A00-4863-B525-F8584DBA0FD1</string>
+			<string>D9A2805E-9CBF-42AE-A4B6-336AFECF6D80</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>/bin/bash lay_config.sh goto</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>00A9299A-443B-4845-93AE-96989F027A63</string>
 			<key>version</key>
 			<integer>2</integer>
 		</dict>
@@ -354,6 +344,13 @@ open ~/Library/Application\ Support/Alfred\ 2/Workflow\ Data/de.leanovate.alfred
 	<string></string>
 	<key>uidata</key>
 	<dict>
+		<key>00A9299A-443B-4845-93AE-96989F027A63</key>
+		<dict>
+			<key>xpos</key>
+			<integer>480</integer>
+			<key>ypos</key>
+			<integer>690</integer>
+		</dict>
 		<key>1DABD84A-FE15-4A4F-8D33-40231B8E1DA3</key>
 		<dict>
 			<key>xpos</key>
@@ -375,13 +372,6 @@ open ~/Library/Application\ Support/Alfred\ 2/Workflow\ Data/de.leanovate.alfred
 			<key>ypos</key>
 			<real>140</real>
 		</dict>
-		<key>5DD314C2-0AF2-46A3-8880-09DD6D56B01E</key>
-		<dict>
-			<key>xpos</key>
-			<integer>500</integer>
-			<key>ypos</key>
-			<real>630</real>
-		</dict>
 		<key>691EF607-FFE2-44E8-A264-F2D570686AAB</key>
 		<dict>
 			<key>xpos</key>
@@ -396,19 +386,19 @@ open ~/Library/Application\ Support/Alfred\ 2/Workflow\ Data/de.leanovate.alfred
 			<key>ypos</key>
 			<real>380</real>
 		</dict>
-		<key>9D883753-5A00-4863-B525-F8584DBA0FD1</key>
-		<dict>
-			<key>xpos</key>
-			<integer>500</integer>
-			<key>ypos</key>
-			<real>750</real>
-		</dict>
 		<key>9F2EF603-B6CC-4BEF-88EE-0D68066ACCE9</key>
 		<dict>
 			<key>xpos</key>
 			<integer>300</integer>
 			<key>ypos</key>
-			<real>680</real>
+			<integer>560</integer>
+		</dict>
+		<key>D9A2805E-9CBF-42AE-A4B6-336AFECF6D80</key>
+		<dict>
+			<key>xpos</key>
+			<integer>480</integer>
+			<key>ypos</key>
+			<integer>560</integer>
 		</dict>
 	</dict>
 	<key>variables</key>

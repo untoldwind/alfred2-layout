@@ -223,10 +223,6 @@
 				<false/>
 				<key>focusedappvariablename</key>
 				<string></string>
-				<key>hotkey</key>
-				<integer>0</integer>
-				<key>hotmod</key>
-				<integer>0</integer>
 				<key>leftcursor</key>
 				<false/>
 				<key>modsmode</key>
@@ -254,10 +250,6 @@
 				<false/>
 				<key>focusedappvariablename</key>
 				<string></string>
-				<key>hotkey</key>
-				<integer>0</integer>
-				<key>hotmod</key>
-				<integer>0</integer>
 				<key>leftcursor</key>
 				<false/>
 				<key>modsmode</key>
@@ -404,7 +396,7 @@
 	<key>variables</key>
 	<dict>
 		<key>LAYOUTS_FILE</key>
-		<string>~/Library/Application Support/Alfred 3/Workflow Data/de.leanovate.alfred.layout/layouts.yaml</string>
+		<string>/path/to/layouts.yaml</string>
 	</dict>
 	<key>version</key>
 	<string></string>

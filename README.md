@@ -1,6 +1,6 @@
 # !!!Looking for new owner/maintainer!!!
 
-I kind of gave up on Apple as they longer provide the Hardware I want/need and switch to Linux which already has several
+I kind of gave up on Apple as they no longer provide the Hardware I want/need and switched to Linux which already has several
 very powerful tiling window-managers (i3, xmonad, awesome ...).
 
 I'll do my best to maintain this project for the time being. But since I no longer actively use it myself bug-fixing will be

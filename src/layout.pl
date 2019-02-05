@@ -142,13 +142,36 @@ sub _ptr_pack_str { 'P'.$_[0]->CGFloatS*4 }
 
 package main;
 
+# quick and dirty fix to work around get() problem with window objects. see ticket #23
+sub getWindowQuickFix {
+  my ($objectRef) = @_;
+  my ( $returnStatus, $returnValue, $exceptionReason, $exceptionInfo );
+  {
+    no warnings;             # "use warnings" gripes if any arguments are undef or non-numeric
+    ( $returnStatus, $returnValue, $exceptionReason, $exceptionInfo ) = PerlObjCBridge::sendObjcMessage(
+    1,                       # flag indicating whether this message is sent to class (0) or to object (1)
+    $$objectRef,             # the Objective-C id, if this is an instance message
+    "SBObject",              # the Objective-C class name
+    "get",                   # the Objective-C message selector
+                             # the message arguments (none in this case)
+    );
+
+  }
+  if ( $returnStatus == 0 ) {               # message sent OK
+    return $returnValue;
+  }
+  else {
+    die "**** ERROR **** PerlObjCBridge::AUTOLOAD: unknown return status [$returnStatus] sending message [SBObject get]";
+  }
+}
+
 # Find the main window of a process (i.e. the window that should be layouted)
 sub findMainWindow {
 	my ($process) = @_;
-	my $window = $process->attributes()->objectWithName_("AXMainWindow")->value()->get();
+	my $window = getWindowQuickFix($process->attributes()->objectWithName_("AXMainWindow")->value());
 	if ( !$$window ) {
-		# For some resone there is no AXMainWindow so we try AXFocusedWindow
-		$window = $process->attributes()->objectWithName_("AXFocusedWindow")->value()->get();
+		# For some reason there is no AXMainWindow so we try AXFocusedWindow
+		$window = getWindowQuickFix($process->attributes()->objectWithName_("AXFocusedWindow")->value());
 	}
 	if ( !$$window ) {
 		my $enumerator = $process->windows()->objectEnumerator();

@@ -62,7 +62,7 @@ Examples:
 # Implementation notes
 
 * The script is written in python using PyObjC and the ScriptingBridge. This should be no problem as both is shiped as part of MacOS since 10.5.
-* It the application supports scripting, the window is moved "directly". Unluckily some Applications do not support this, so there is a fallback using "SystemEvents". This only works if you have UI scripting enabled: [Graphic User Interface (GUI) Scripting](http://www.macosxautomation.com/applescript/uiscripting/)
+* It the application supports scripting, the window is moved "directly". Unluckily some Applications do not support this, so there is a fallback using "SystemEvents". his workflow only works if Alfred is included in the list of Accessibility applications, which can be found under System Preferences > Security & Privacy > Privacy > Accessibility (in previous MaxOS Versions this was done via [Graphic User Interface (GUI) Scripting](http://www.macosxautomation.com/applescript/uiscripting/))
 * At the moment there are no hotkeys defined, which should be straight forward though ...
 
 # Hacking
